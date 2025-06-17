@@ -35,7 +35,7 @@ class DiaryEntry:
     @contents.setter
     def contents(self, contents):
         if not isinstance(contents, str):
-            raise TypeError("Contents must be a string")
+            raise TypeError("Contents must be a string.")
         self._contents = contents
         self._words = contents.split()
         self._current_chunk_index = 0

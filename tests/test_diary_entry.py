@@ -57,6 +57,49 @@ def test_none_string_contents_raises_error():
 
     assert error_message == expected
 
+'''
+test setting the properties works
+'''
+def test_setting_properties_sets_values():
+    diary_entry = DiaryEntry("Title1", "contents1")
+    diary_entry.title = "Title2"
+    diary_entry.contents = "contents2"
+
+    assert diary_entry.title == "Title2"
+    assert diary_entry.contents == "contents2"
+
+'''
+Modifing the title to a non string 
+throws an error
+'''
+def test_modifying_title_to_non_string_throws_error():
+    diary_entry = DiaryEntry("title", "Contents")
+
+    with pytest.raises(TypeError) as err:
+        diary_entry.title = 3
+
+    error_message = str(err.value)
+
+    expected = ("Title must be a string.")
+
+    assert error_message == expected
+
+'''
+Modifing the contents to a non string 
+throws an error
+'''
+def test_modifying_contents_to_non_string_trhows_error():
+    diary_entry = DiaryEntry("title", "Contents")
+
+    with pytest.raises(TypeError) as err:
+        diary_entry.contents = [1, "hello"]
+
+    error_message = str(err.value)
+
+    expected = ("Contents must be a string.")
+
+    assert error_message == expected
+
 #Testing count_words
 
 '''
@@ -87,6 +130,24 @@ def test_empty_string_returns_zero():
 
     assert actual == expected
 
+'''
+Given a modified string
+count_words returns the correct amount of words
+'''
+def test_count_words_counts_modified_words():
+
+    diary_entry = DiaryEntry("title", "one two three four five six")
+
+    diary_entry.title = "Title 2"
+
+    diary_entry.contents = "one two three"
+
+    actual = diary_entry.count_words()
+
+    expected = 3
+
+    assert actual == expected
+
 #Testing reading_time
 
 '''
@@ -106,10 +167,26 @@ def test_reading_gives_estimate():
     assert actual == expected
 
 '''
+Given one word and a wpm of 1
+reading_time returns an estimate of 1 minutes
+'''
+def test_one_word_and_one_wpm_makes_reading_time_returns_one():
+
+    text = "word"
+
+    diary_entry = DiaryEntry("title", text)
+
+    actual = diary_entry.reading_time(1)
+
+    expected = 1
+
+    assert actual == expected
+
+'''
 Given contents and wpm so reading time has frational part greater than half 
 reading_time rounds up to 2 minute
 '''
-def test_fractional_reading_time_is_rounded_down():
+def test_fractional_reading_time_is_rounded_up():
 
     text = " ".join(["word"] * 3)
 
@@ -122,16 +199,16 @@ def test_fractional_reading_time_is_rounded_down():
     assert actual == expected
 
 '''
-Given one word and a wpm of 1
-reading_time returns an estimate of 1 minutes
+Given contents and wpm so reading time has frational part less than half 
+reading_time rounds down to 1 minute
 '''
-def test_one_word_and_one_wpm_makes_reading_time_returns_one():
+def test_fractional_reading_time_is_rounded_down():
 
-    text = "word"
+    text = " ".join(["word"] * 7)
 
     diary_entry = DiaryEntry("title", text)
 
-    actual = diary_entry.reading_time(1)
+    actual = diary_entry.reading_time(6)
 
     expected = 1
 
@@ -261,6 +338,7 @@ def test_reading_over_last_chunk():
 
     assert actual == expected
 
+
 '''
 Given reading chunk called with new wpm
 return the first chunk
@@ -279,31 +357,20 @@ def test_reading_with_differnt_wpm():
     assert actual == expected
 
 '''
-Modifing the title to a non string 
-throws an error
+Given reading chunk called with new contents
+return the first chunk
 '''
-def modifying_title_to_non_string_trows_error():
-    diary_entry = DiaryEntry("title", "Contents")
-    with pytest.raises(TypeError) as err:
-        diary_entry.title = 3
+def test_reading_with_differnt_contents():
+    text = " ".join(['a'] * 10 + ['b'] * 10 + ['c'] * 7)
+    text2 = " ".join(['a'] * 10 + ['b'] * 10 + ['c'] * 8)
+    diary_entry = DiaryEntry("Today", text)
 
-    error_message = str(err.value)
+    diary_entry.reading_chunk(10, 1)
+    diary_entry.contents = text2
+    actual = diary_entry.reading_chunk(10, 1)
 
-    expected = ("Title must be a string.")
+    chunk_text = " ".join(['a'] * 10)
 
-    assert error_message == expected
+    expected = chunk_text
 
-'''
-Modifing the title to a non string 
-throws an error
-'''
-def modifying_contents_to_non_string_trows_error():
-    diary_entry = DiaryEntry("title", "Contents")
-    with pytest.raises(TypeError) as err:
-        diary_entry.contents = [1, "hello"]
-
-    error_message = str(err.value)
-
-    expected = ("Contents must be a string.")
-
-    assert error_message == expected
+    assert actual == expected

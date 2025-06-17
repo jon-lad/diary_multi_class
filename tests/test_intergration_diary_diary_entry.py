@@ -182,6 +182,7 @@ def test_get_best_entry_for_reading_time():
     expected = diary_entry_3
 
     assert actual == expected
+
 '''
 Given multiple unsuitable diary entries
 returns None
